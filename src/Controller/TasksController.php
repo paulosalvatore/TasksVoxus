@@ -56,7 +56,14 @@ class TasksController extends AppController
     {
         $task = $this->Tasks->newEntity();
         if ($this->request->is("post")) {
-            $task = $this->Tasks->patchEntity($task, $this->request->getData());
+        	$data = $this->request->getData();
+        	$data["user_id"] = $this->usuario["id"];
+        	debug($data);
+
+            $task = $this->Tasks->patchEntity($task, $data, [
+            	"associated" => "Users"
+			]);
+			debug($task);
             if ($this->Tasks->save($task)) {
                 $this->Flash->success(__("The task has been saved."));
 
