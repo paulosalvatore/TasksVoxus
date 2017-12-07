@@ -18,6 +18,9 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 <!DOCTYPE html>
 <html>
 <head>
+	<?php include_once("include/css.php"); ?>
+	<?php include_once("include/js.php"); ?>
+
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
