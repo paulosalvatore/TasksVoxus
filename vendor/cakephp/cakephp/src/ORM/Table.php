@@ -2810,7 +2810,7 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
 		if (isset($_SESSION["Auth"]["User"]["id"]))
 			$usuarioId = $_SESSION["Auth"]["User"]["id"];
 		else
-			$usuarioId = 0;
+			$usuarioId = null;
 
 		$this->belongsTo("HistoricosAuditoria");
 
