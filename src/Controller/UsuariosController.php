@@ -70,8 +70,6 @@ class UsuariosController extends AppController
 
 	public function show()
 	{
-		$this->acessoRestrito();
-
 		$usuarios = $this->Usuarios->pegar();
 
 		$this->set("usuarios", $usuarios);
@@ -79,8 +77,6 @@ class UsuariosController extends AppController
 
 	public function view($id = null, $visualizar = false)
 	{
-		$this->acessoRestrito();
-
 		if ($id)
 			$usuario = $this->Usuarios->pegarId($id);
 		else
@@ -111,6 +107,19 @@ class UsuariosController extends AppController
 				else
 					$this->Flash->success(__("User was added successfully."));
 
+				if (!$this->usuario)
+				{
+					$this->Auth->setUser($usuario);
+					$this->Usuarios->UsuariosLogin->registrarNovoLogin($usuario["id"]);
+
+					return $this->redirect(
+						[
+							"controller" => "Tasks",
+							"action" => "show"
+						]
+					);
+				}
+
 				return $this->redirect(
 					[
 						"action" => "show"
@@ -136,6 +145,15 @@ class UsuariosController extends AppController
 	{
 		parent::beforeFilter($event);
 
-		$this->Auth->allow();
+		$this->Auth->allow(
+			[
+				"view",
+				"teste"
+			]
+		);
+	}
+
+	public function teste()
+	{
 	}
 }

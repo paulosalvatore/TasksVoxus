@@ -12,8 +12,6 @@ class TasksController extends AppController
 {
 	public function delete($id = null)
 	{
-		$this->acessoRestrito();
-
 		$this->request->allowMethod(["post", "delete"]);
 		$task = $this->Tasks->get($id);
 		$task->ativo = false;
@@ -36,8 +34,6 @@ class TasksController extends AppController
 
 	public function show()
 	{
-		$this->acessoRestrito();
-
 		$tasks = $this->Tasks->pegar();
 
 		$this->set("tasks", $tasks);
@@ -45,8 +41,6 @@ class TasksController extends AppController
 
 	public function view($id = null, $visualizar = false)
 	{
-		$this->acessoRestrito();
-
 		if ($id)
 			$task = $this->Tasks->pegarId($id);
 		else
