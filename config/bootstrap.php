@@ -38,7 +38,9 @@ use Cake\Core\Plugin;
 use Cake\Database\Type;
 use Cake\Datasource\ConnectionManager;
 use Cake\Error\ErrorHandler;
+use Cake\Filesystem\File;
 use Cake\Http\ServerRequest;
+use Cake\I18n\FrozenTime;
 use Cake\Log\Log;
 use Cake\Mailer\Email;
 use Cake\Utility\Inflector;
@@ -93,7 +95,7 @@ if (Configure::read("debug")) {
  * choice but using UTC makes time calculations / conversions easier.
  * Check http://php.net/manual/en/timezones.php for list of valid timezone strings.
  */
-date_default_timezone_set("UTC");
+date_default_timezone_set("America/Sao_Paulo");
 
 /*
  * Configure the mbstring extension to use the correct encoding.
@@ -215,3 +217,317 @@ if (Configure::read("debug")) {
     Plugin::load("DebugKit", ["bootstrap" => true]);
 }
 
+class UploadException extends Exception
+{
+	public function __construct($code) {
+		$mensagem = $this->codeToMessage($code);
+		parent::__construct($mensagem, $code);
+	}
+
+	private function codeToMessage($code)
+	{
+		switch ($code)
+		{
+			case UPLOAD_ERR_INI_SIZE:
+				$mensagem = __("The uploaded file exceeds the upload_max_filesize directive in php.ini");
+				break;
+			case UPLOAD_ERR_FORM_SIZE:
+				$mensagem = __("The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form");
+				break;
+			case UPLOAD_ERR_PARTIAL:
+				$mensagem = __("The uploaded file was only partially uploaded");
+				break;
+			case UPLOAD_ERR_NO_FILE:
+				$mensagem = __("No file was uploaded");
+				break;
+			case UPLOAD_ERR_NO_TMP_DIR:
+				$mensagem = __("Missing a temporary folder");
+				break;
+			case UPLOAD_ERR_CANT_WRITE:
+				$mensagem = __("Failed to write file to disk");
+				break;
+			case UPLOAD_ERR_EXTENSION:
+				$mensagem = __("File upload stopped by extension");
+				break;
+
+			default:
+				$mensagem = __("Unknown upload error");
+				break;
+		}
+
+		return $mensagem;
+	}
+}
+
+class Arquivos
+{
+	public static $imagens = [
+		"jpg",
+		"jpeg",
+		"png",
+		"tif",
+		"tiff"
+	];
+
+	public static $formatos = [
+		"doc" => [
+			"visualizar" => false,
+			"mime" => "application/msword"
+		],
+		"docx" => [
+			"visualizar" => false,
+			"mime" => "application/msword"
+		],
+		"rtf" => [
+			"visualizar" => false,
+			"mime" => "application/rtf"
+		],
+		"odt" => [
+			"visualizar" => false,
+			"mime" => "application/odt"
+		],
+		"pdf" => [
+			"visualizar" => true,
+			"mime" => "application/pdf"
+		],
+		"jpg" => [
+			"visualizar" => true,
+			"mime" => "image/jpg"
+		],
+		"jpeg" => [
+			"visualizar" => true,
+			"mime" => "image/jpeg"
+		],
+		"png" => [
+			"visualizar" => true,
+			"mime" => "image/png"
+		],
+		"tif" => [
+			"visualizar" => false,
+			"mime" => "application/tiff"
+		],
+		"tiff" => [
+			"visualizar" => false,
+			"mime" => "application/tiff"
+		],
+		"rar" => [
+			"visualizar" => false,
+			"mime" => "application/rar"
+		],
+		"zip" => [
+			"visualizar" => false,
+			"mime" => "application/zip"
+		]
+	];
+
+	public static $definicoes = [
+		"Tasks" => [
+			"tasks_arquivos" => [
+				"formatos" => [
+					"doc",
+					"docx",
+					"rtf",
+					"odt",
+					"pdf",
+					"jpg",
+					"jpeg",
+					"png",
+					"tif",
+					"tiff",
+					"rar",
+					"zip"
+				],
+				"img" => false
+			]
+		]
+	];
+
+	public static function download($controlador, $diretorio, $arquivo)
+	{
+		return \Arquivos::validar($controlador, $diretorio, $arquivo, false, false);
+	}
+
+	public static function visualizar($controlador, $diretorio, $arquivo)
+	{
+		return \Arquivos::validar($controlador, $diretorio, $arquivo, true, false);
+	}
+
+	public static function pegarFormatosAceitos($controlador, $campo, $agrupar = false, $transformarExtensao = false)
+	{
+		$formatosAceitos = Arquivos::$definicoes[$controlador][$campo]["formatos"];
+
+		$formatosAceitos =
+			$agrupar
+				? implode("; ", $formatosAceitos)
+				: $formatosAceitos;
+
+		$formatosAceitos =
+			$transformarExtensao
+				? "." . str_replace("; ", ", .", $formatosAceitos)
+				: $formatosAceitos;
+
+		return $formatosAceitos;
+	}
+
+	public static function pegarExtensao($arquivo)
+	{
+		if (is_array($arquivo))
+			$arquivo = $arquivo["name"];
+
+		return
+			strtolower(
+				pathinfo(
+					$arquivo,
+					PATHINFO_EXTENSION
+				)
+			);
+	}
+
+	public static function validar($controlador, $campo, $arquivo, $visualizar = false, $throw = true)
+	{
+		$formatosAceitos = Arquivos::pegarFormatosAceitos($controlador, $campo);
+
+		$extensao = Arquivos::pegarExtensao($arquivo);
+
+		if (in_array($extensao, $formatosAceitos))
+		{
+			$formato = Arquivos::$formatos[$extensao];
+
+			if ($visualizar && !$formato["visualizar"])
+			{
+				if ($throw)
+					throw new Exception(__("This file cannot be visualized."));
+
+				return false;
+			}
+
+			$arquivo = $campo . "/" . $arquivo;
+
+			if (isset(Arquivos::$definicoes[$controlador][$campo]["img"]) &&
+				Arquivos::$definicoes[$controlador][$campo]["img"])
+				$arquivo = "img/" . $arquivo;
+
+			if (is_file($arquivo))
+				return [
+					"arquivo" => $arquivo,
+					"extensão" => $extensao,
+					"mime" => $formato["mime"]
+				];
+			elseif ($throw)
+				throw new Exception(__("File missing."));
+		}
+		elseif ($throw)
+			throw new Exception(__("File type invalid."));
+
+		return false;
+	}
+
+	public static function validarExtensao($controlador, $campo, $arquivo)
+	{
+		$formatosAceitos = Arquivos::pegarFormatosAceitos($controlador, $campo);
+
+		$extensao = Arquivos::pegarExtensao($arquivo);
+
+		if (in_array($extensao, $formatosAceitos))
+			return true;
+
+		return false;
+	}
+
+	public static function upload($controlador, $campo, $arquivo)
+	{
+		$diretorio =
+			WWW_ROOT
+			."/";
+
+		if (isset(Arquivos::$definicoes[$controlador][$campo]["img"]) &&
+			Arquivos::$definicoes[$controlador][$campo]["img"])
+			$diretorio .= "img/";
+
+		$diretorio =
+			$diretorio
+			.strtolower($controlador)
+			."/";
+
+		if (!is_dir($diretorio))
+			mkdir($diretorio);
+
+		$retorno = [
+			"erro" => true,
+			"mensagem" => __("Some error occurred when uploading this file."),
+			"nomeOriginal" => $arquivo["name"]
+		];
+
+		if ($arquivo["error"] != UPLOAD_ERR_OK)
+			$retorno["mensagem"] = new UploadException($arquivo["error"]);
+		elseif (!\Arquivos::validarExtensao($controlador, $campo, $arquivo))
+			$retorno["mensagem"] = __("Invalid file type. Upload a valid file within the file types") . ": '" . \Arquivos::pegarFormatosAceitos($controlador, $campo, true) . "'.";
+		else
+		{
+			$arquivo["extensão"] = Arquivos::pegarExtensao($arquivo);
+
+			$nomeArquivo =
+				md5(
+					$controlador
+					.$campo
+					.$arquivo["name"]
+					.$arquivo["tmp_name"]
+					.FrozenTime::now()
+				)
+				."."
+				.$arquivo["extensão"];
+
+			$arquivo = new File($arquivo["tmp_name"]);
+			$arquivo->copy($diretorio . $nomeArquivo);
+			$arquivo->close();
+
+			$retorno["erro"] = false;
+			$retorno["mensagem"] = __("File uploaded successfully.");
+			$retorno["arquivo"] = $arquivo;
+			$retorno["arquivoNome"] = $nomeArquivo;
+		}
+
+		return $retorno;
+	}
+
+	public static function deletar($controlador, $campo, $arquivo)
+	{
+		$diretorio =
+			WWW_ROOT
+			."/";
+
+		if (isset(Arquivos::$definicoes[$controlador][$campo]["img"]) &&
+			Arquivos::$definicoes[$controlador][$campo]["img"])
+			$diretorio .= "img/";
+
+		$arquivo =
+			$diretorio
+			.strtolower($controlador)
+			."/"
+			.$arquivo;
+
+		if (is_file($arquivo))
+			unlink($arquivo);
+	}
+}
+
+class Utils
+{
+	public static function human_filesize($bytes, $decimals = 2)
+	{
+		$sz = "BKMGTP";
+		$factor = floor((strlen($bytes) - 1) / 3);
+		return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
+	}
+
+	/*
+	 * Esse método limpa todos os caracteres especiais e espaços de uma string
+	 * preservando traços e underlines.
+	 */
+	public static function limparString($string)
+	{
+		$string = str_replace(" ", "-", $string);
+
+		return preg_replace("/[^A-Za-z0-9\-\_]/", "", $string);
+	}
+}
