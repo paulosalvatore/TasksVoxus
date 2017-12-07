@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Event\Event;
 
 /**
  * Tasks Controller
@@ -21,12 +22,12 @@ class TasksController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['Users']
+            "contain" => ["Users"]
         ];
         $tasks = $this->paginate($this->Tasks);
 
-        $this->set(compact('tasks'));
-        $this->set('_serialize', ['tasks']);
+        $this->set(compact("tasks"));
+        $this->set("_serialize", ["tasks"]);
     }
 
     /**
@@ -39,11 +40,11 @@ class TasksController extends AppController
     public function view($id = null)
     {
         $task = $this->Tasks->get($id, [
-            'contain' => ['Users']
+            "contain" => ["Users"]
         ]);
 
-        $this->set('task', $task);
-        $this->set('_serialize', ['task']);
+        $this->set("task", $task);
+        $this->set("_serialize", ["task"]);
     }
 
     /**
@@ -54,18 +55,18 @@ class TasksController extends AppController
     public function add()
     {
         $task = $this->Tasks->newEntity();
-        if ($this->request->is('post')) {
+        if ($this->request->is("post")) {
             $task = $this->Tasks->patchEntity($task, $this->request->getData());
             if ($this->Tasks->save($task)) {
-                $this->Flash->success(__('The task has been saved.'));
+                $this->Flash->success(__("The task has been saved."));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(["action" => "index"]);
             }
-            $this->Flash->error(__('The task could not be saved. Please, try again.'));
+            $this->Flash->error(__("The task could not be saved. Please, try again."));
         }
-        $users = $this->Tasks->Users->find('list', ['limit' => 200]);
-        $this->set(compact('task', 'users'));
-        $this->set('_serialize', ['task']);
+        $users = $this->Tasks->Users->find("list", ["limit" => 200]);
+        $this->set(compact("task", "users"));
+        $this->set("_serialize", ["task"]);
     }
 
     /**
@@ -78,20 +79,20 @@ class TasksController extends AppController
     public function edit($id = null)
     {
         $task = $this->Tasks->get($id, [
-            'contain' => []
+            "contain" => []
         ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
+        if ($this->request->is(["patch", "post", "put"])) {
             $task = $this->Tasks->patchEntity($task, $this->request->getData());
             if ($this->Tasks->save($task)) {
-                $this->Flash->success(__('The task has been saved.'));
+                $this->Flash->success(__("The task has been saved."));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(["action" => "index"]);
             }
-            $this->Flash->error(__('The task could not be saved. Please, try again.'));
+            $this->Flash->error(__("The task could not be saved. Please, try again."));
         }
-        $users = $this->Tasks->Users->find('list', ['limit' => 200]);
-        $this->set(compact('task', 'users'));
-        $this->set('_serialize', ['task']);
+        $users = $this->Tasks->Users->find("list", ["limit" => 200]);
+        $this->set(compact("task", "users"));
+        $this->set("_serialize", ["task"]);
     }
 
     /**
@@ -103,14 +104,14 @@ class TasksController extends AppController
      */
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(["post", "delete"]);
         $task = $this->Tasks->get($id);
         if ($this->Tasks->delete($task)) {
-            $this->Flash->success(__('The task has been deleted.'));
+            $this->Flash->success(__("The task has been deleted."));
         } else {
-            $this->Flash->error(__('The task could not be deleted. Please, try again.'));
+            $this->Flash->error(__("The task could not be deleted. Please, try again."));
         }
 
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect(["action" => "index"]);
     }
 }
