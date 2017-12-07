@@ -1,60 +1,180 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Task $task
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('Edit Task'), ['action' => 'edit', $task->id]) ?> </li>
-        <li><?= $this->Form->postLink(__('Delete Task'), ['action' => 'delete', $task->id], ['confirm' => __('Are you sure you want to delete # {0}?', $task->id)]) ?> </li>
-        <li><?= $this->Html->link(__('List Tasks'), ['action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Task'), ['action' => 'add']) ?> </li>
-    </ul>
-</nav>
-<div class="tasks view large-9 medium-8 columns content">
-    <h3><?= h($task->id) ?></h3>
-    <table class="vertical-table">
-        <tr>
-            <th scope="row"><?= __('Titulo') ?></th>
-            <td><?= h($task->titulo) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('User Id') ?></th>
-            <td><?= h($task->user_id) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('User') ?></th>
-            <td><?= $task->has('user') ? $this->Html->link($task->user->id, ['controller' => 'Users', 'action' => 'view', $task->user->id]) : '' ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Id') ?></th>
-            <td><?= $this->Number->format($task->id) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Prioridade') ?></th>
-            <td><?= $this->Number->format($task->prioridade) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Status') ?></th>
-            <td><?= $this->Number->format($task->status) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Criado') ?></th>
-            <td><?= h($task->criado) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Modificado') ?></th>
-            <td><?= h($task->modificado) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Ativo') ?></th>
-            <td><?= $task->ativo ? __('Yes') : __('No'); ?></td>
-        </tr>
-    </table>
-    <div class="row">
-        <h4><?= __('Descricao') ?></h4>
-        <?= $this->Text->autoParagraph(h($task->descricao)); ?>
-    </div>
+﻿<div class="row margem">
+	<div class="div-col-md-12">
+		<?=
+			$this
+				->Html
+				->link(
+					__("Show All"),
+					[
+						"action" => "show"
+					],
+					[
+						"class" => "btn btn-clean btn-primary btn-md"
+					]
+				)
+		?>
+
+		<br>
+
+		<?=
+			$this
+				->Form
+				->create(
+					$task,
+					[
+						"class" => "form-horizontal",
+						"data-bvalidator-validate"
+					]
+				)
+		?>
+			<br>
+			<div class="block block-condensed">
+				<div class="block-heading">
+					<div class="app-heading app-heading-small">
+						<div class="title">
+							<h2>
+								<?php if ($visualizar): ?>
+									<?= __("View") . " " . __("Task") ?>
+								<?php elseif (isset($task->id)): ?>
+									<?= __("Edit") . " " . __("Task") ?>
+								<?php else: ?>
+									<?= __("Add") . " " . __("Task") ?>
+								<?php endif; ?>
+							</h2>
+						</div>
+					</div>
+				</div>
+
+				<div class="block-content">
+					<div class="form-group">
+						<div class="row">
+							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="descricao">
+								<?= __("Title") ?>
+								<span class="required">*</span>
+							</label>
+							<div class="col-md-6 col-sm-5 col-xs-12">
+								<div class="input-group">
+									<div class="input-group-addon">
+										<span class="fa fa-info-circle"></span>
+									</div>
+									<?=
+										$this
+											->Form
+											->input(
+												"titulo",
+												[
+													"label" => false,
+													"data-bvalidator" => "required,maxlen[255]",
+													"class" => "form-control"
+												]
+											)
+									?>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="descricao">
+								<?= __("Description") ?>
+								<span class="required">*</span>
+							</label>
+							<div class="col-md-6 col-sm-5 col-xs-12">
+								<div class="input-group">
+									<div class="input-group-addon">
+										<span class="fa fa-info-circle"></span>
+									</div>
+									<?=
+										$this
+											->Form
+											->input(
+												"descricao",
+												[
+													"label" => false,
+													"data-bvalidator" => "required,maxlen[65535]",
+													"class" => "form-control"
+												]
+											)
+									?>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="descricao">
+								<?= __("Priority") ?> (1 - 5)
+								<span class="required">*</span>
+							</label>
+							<div class="col-md-6 col-sm-5 col-xs-12">
+								<div class="input-group">
+									<div class="input-group-addon">
+										<span class="fa fa-info-circle"></span>
+									</div>
+									<?=
+										$this
+											->Form
+											->input(
+												"prioridade",
+												[
+													"label" => false,
+													"data-bvalidator" => "required,maxlen[1]",
+													"class" => "form-control"
+												]
+											)
+									?>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<?php if (!$visualizar): ?>
+					<div class="block-footer">
+						<br>
+						<div class="form-group">
+							<div class="row">
+								<div class="col-md-3 col-sm-3 col-xs-0">
+								</div>
+								<div class="col-md-6 col-sm-5 col-xs-12">
+									<?php if (isset($task->id)): ?>
+										<?=
+											$this
+												->Form
+												->button(
+													__("Edit"),
+													[
+														"type" => "submit",
+														"class" => "pull-left btn btn-primary btn-clean",
+														"escape" => false
+													]
+												)
+										?>
+									<?php else: ?>
+										<?=
+											$this
+												->Form
+												->button(
+													__("Add"),
+													[
+														"type" => "submit",
+														"class" => "pull-left btn btn-success btn-clean",
+														"escape" => false
+													]
+												)
+										?>
+									<?php endif; ?>
+								</div>
+							</div>
+						</div>
+					</div>
+				<?php endif; ?>
+			</div>
+		<?=
+			$this
+				->Form
+				->end();
+		?>
+	</div>
 </div>
+<br>

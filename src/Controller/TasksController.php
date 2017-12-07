@@ -1,124 +1,99 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: paulo
+ * Date: 30/11/2017
+ * Time: 19:17
+ */
+
 namespace App\Controller;
 
-use App\Controller\AppController;
-use Cake\Event\Event;
-
-/**
- * Tasks Controller
- *
- * @property \App\Model\Table\TasksTable $Tasks
- *
- * @method \App\Model\Entity\Task[] paginate($object = null, array $settings = [])
- */
 class TasksController extends AppController
 {
+	public function delete($id = null)
+	{
+		$this->acessoRestrito();
 
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function index()
-    {
-        $this->paginate = [
-            "contain" => ["Users"]
-        ];
-        $tasks = $this->paginate($this->Tasks);
+		$this->request->allowMethod(["post", "delete"]);
+		$task = $this->Tasks->get($id);
+		$task->ativo = false;
 
-        $this->set(compact("tasks"));
-        $this->set("_serialize", ["tasks"]);
-    }
+		if ($this->Tasks->save($task))
+		{
+			$this->Flash->success(__("Task was removed successfully."));
+		}
+		else
+		{
+			$this->Flash->error(__("Task not removed. Please try again."));
+		}
 
-    /**
-     * View method
-     *
-     * @param string|null $id Task id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $task = $this->Tasks->get($id, [
-            "contain" => ["Users"]
-        ]);
+		return $this->redirect(
+			[
+				"action" => "show"
+			]
+		);
+	}
 
-        $this->set("task", $task);
-        $this->set("_serialize", ["task"]);
-    }
+	public function show()
+	{
+		$this->acessoRestrito();
 
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $task = $this->Tasks->newEntity();
-        if ($this->request->is("post")) {
-        	$data = $this->request->getData();
-        	$data["user_id"] = $this->usuario["id"];
-        	debug($data);
+		$tasks = $this->Tasks->pegar();
 
-            $task = $this->Tasks->patchEntity($task, $data, [
-            	"associated" => "Users"
-			]);
-			debug($task);
-            if ($this->Tasks->save($task)) {
-                $this->Flash->success(__("The task has been saved."));
+		$this->set("tasks", $tasks);
+	}
 
-                return $this->redirect(["action" => "index"]);
-            }
-            $this->Flash->error(__("The task could not be saved. Please, try again."));
-        }
-        $users = $this->Tasks->Users->find("list", ["limit" => 200]);
-        $this->set(compact("task", "users"));
-        $this->set("_serialize", ["task"]);
-    }
+	public function view($id = null, $visualizar = false)
+	{
+		$this->acessoRestrito();
 
-    /**
-     * Edit method
-     *
-     * @param string|null $id Task id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $task = $this->Tasks->get($id, [
-            "contain" => []
-        ]);
-        if ($this->request->is(["patch", "post", "put"])) {
-            $task = $this->Tasks->patchEntity($task, $this->request->getData());
-            if ($this->Tasks->save($task)) {
-                $this->Flash->success(__("The task has been saved."));
+		if ($id)
+			$task = $this->Tasks->pegarId($id);
+		else
+			$task = $this->Tasks->newEntity();
 
-                return $this->redirect(["action" => "index"]);
-            }
-            $this->Flash->error(__("The task could not be saved. Please, try again."));
-        }
-        $users = $this->Tasks->Users->find("list", ["limit" => 200]);
-        $this->set(compact("task", "users"));
-        $this->set("_serialize", ["task"]);
-    }
+		if ($this->request->is(["post", "patch", "put"]))
+		{
+			$data = $this->request->getData();
 
-    /**
-     * Delete method
-     *
-     * @param string|null $id Task id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(["post", "delete"]);
-        $task = $this->Tasks->get($id);
-        if ($this->Tasks->delete($task)) {
-            $this->Flash->success(__("The task has been deleted."));
-        } else {
-            $this->Flash->error(__("The task could not be deleted. Please, try again."));
-        }
+			if (!$id)
+			{
+				$data["usuario_id"] = $this->usuario["id"];
+			}
 
-        return $this->redirect(["action" => "index"]);
-    }
+			$task =
+				$this
+					->Tasks
+					->patchEntity(
+						$task,
+						$data
+					);
+
+			if ($this->Tasks->save($task))
+			{
+				if ($id)
+					$this->Flash->success(__("Task was edited successfully."));
+				else
+					$this->Flash->success(__("Task was added successfully."));
+
+				return $this->redirect(
+					[
+						"action" => "show"
+					]
+				);
+			}
+			else
+			{
+				if ($id)
+					$this->Flash->error(__("Task not edited. Please try again."));
+				else
+					$this->Flash->error(__("Task not added. Please try again."));
+			}
+		}
+
+		$this->set("visualizar", $visualizar);
+
+		$this->set(compact("task"));
+		$this->set("_serialize", ["task"]);
+	}
 }
