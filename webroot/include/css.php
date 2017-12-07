@@ -16,9 +16,5 @@
 <?= $this->Html->css("/include/datatables/datatables.net-responsive-bs/css/responsive.bootstrap.min") ?>
 <?= $this->Html->css("/include/datatables/datatables.net-scroller-bs/css/scroller.bootstrap.min") ?>
 
-<!-- Template -->
-<?= $this->Html->css("ie8") ?>
-<?= $this->Html->css("main") ?>
-
 <!-- Arquivo Personalizado de Estilos -->
 <?= $this->Html->css("style") ?>

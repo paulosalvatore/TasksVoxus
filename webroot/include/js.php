@@ -27,15 +27,6 @@
 <?= $this->Html->script("/include/datatables/datatables.net-responsive-bs/js/responsive.bootstrap") ?>
 <?= $this->Html->script("/include/datatables/datatables.net-scroller/js/dataTables.scroller.min") ?>
 
-<!-- Template -->
-<?= $this->Html->script("jquery.dropotron.min") ?>
-<?= $this->Html->script("skel.min") ?>
-<?= $this->Html->script("skel.min") ?>
-<?= $this->Html->script("skel-viewport.min") ?>
-<?= $this->Html->script("util") ?>
-<?= $this->Html->script("ie/respond.min") ?>
-<?= $this->Html->script("main") ?>
-
 <!-- jQuery - InputMask -->
 <?= $this->Html->script("/include/jquery.inputmask/dist/min/jquery.inputmask.bundle.min") ?>
 
