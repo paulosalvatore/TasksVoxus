@@ -11,6 +11,7 @@
         "cakephp/migrations": "^1.0",
         "cakephp/plugin-installer": "^1.0",
         "josegonzalez/dotenv": "2.*",
+        "league/oauth1-client": "@stable",
         "league/oauth2-google": "@stable",
         "mobiledetect/mobiledetectlib": "2.*"
     },
