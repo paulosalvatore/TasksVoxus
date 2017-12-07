@@ -6,10 +6,12 @@
     "license": "MIT",
     "require": {
         "php": ">=5.6",
+        "cakedc/users": "@stable",
         "cakephp/cakephp": "3.5.*",
         "cakephp/migrations": "^1.0",
         "cakephp/plugin-installer": "^1.0",
         "josegonzalez/dotenv": "2.*",
+        "league/oauth2-google": "@stable",
         "mobiledetect/mobiledetectlib": "2.*"
     },
     "require-dev": {
