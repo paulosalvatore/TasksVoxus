@@ -45,12 +45,11 @@ class AppController extends Controller
 
 		$this->loadComponent("RequestHandler");
 		$this->loadComponent("Flash");
-		$this->loadComponent("Cookie");
 		$this->loadComponent("Auth",
 			[
 				"authenticate" => [
 					"Form" => [
-						"userModel" => "Users",
+						"userModel" => "Usuarios",
 						"fields" => [
 							"username" => "email",
 							"password" => "senha"
@@ -58,7 +57,7 @@ class AppController extends Controller
 					]
 				],
 				"loginAction" => [
-					"controller" => "users",
+					"controller" => "Usuarios",
 					"action" => "login"
 				],
 				"authError" => __("Access denied: You are not authorized to access this page.")

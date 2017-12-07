@@ -15,7 +15,6 @@
 						->input(
 							"email",
 							[
-								"label" => false,
 								"class" => "form-control input-login-size",
 								"placeholder" => __("E-mail")
 							]
@@ -31,7 +30,6 @@
 							"senha",
 							[
 								"type" => "password",
-								"label" => false,
 								"class" => "form-control input-login-size",
 								"placeholder" => __("Password")
 							]
