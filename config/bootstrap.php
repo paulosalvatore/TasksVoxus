@@ -215,7 +215,3 @@ if (Configure::read("debug")) {
     Plugin::load("DebugKit", ["bootstrap" => true]);
 }
 
-Configure::write("Users.config", ["users"]);
-Plugin::load("CakeDC/Users", ["routes" => true, "bootstrap" => true]);
-Configure::write("Users.Social.login", true);
-Configure::write("Auth.authenticate.Form.fields.username", "email");
