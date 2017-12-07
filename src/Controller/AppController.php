@@ -16,6 +16,7 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
+use Cake\Network\Exception\MethodNotAllowedException;
 
 /**
  * Application Controller
@@ -27,6 +28,7 @@ use Cake\Event\Event;
  */
 class AppController extends Controller
 {
+	public $usuario;
 
     /**
      * Initialization hook method.
@@ -37,38 +39,113 @@ class AppController extends Controller
      *
      * @return void
      */
-    public function initialize()
-    {
-        parent::initialize();
+	public function initialize()
+	{
+		parent::initialize();
 
-        $this->loadComponent("RequestHandler");
-        $this->loadComponent("Flash");
+		$this->loadComponent("RequestHandler");
+		$this->loadComponent("Flash");
+		$this->loadComponent("Cookie");
+		$this->loadComponent("Auth",
+			[
+				"authenticate" => [
+					"Form" => [
+						"userModel" => "Users",
+						"fields" => [
+							"username" => "email",
+							"password" => "senha"
+						]
+					]
+				],
+				"loginAction" => [
+					"controller" => "users",
+					"action" => "login"
+				],
+				"authError" => __("Access denied: You are not authorized to access this page.")
+			]
+		);
 
-        /*
-         * Enable the following components for recommended CakePHP security settings.
-         * see https://book.cakephp.org/3.0/en/controllers/components/security.html
-         */
-        //$this->loadComponent("Security");
-        //$this->loadComponent("Csrf");
+		$this->loadModel("Usuarios");
+		$this->usuario = $this->atualizarUsuario();
+		$this->set("usuario", $this->usuario);
 
-		$this->loadComponent("CakeDC/Users.UsersAuth");
-    }
+		/*
+		 * Enable the following components for recommended CakePHP security settings.
+		 * see https://book.cakephp.org/3.0/en/controllers/components/security.html
+		 */
+		// $this->loadComponent("Security");
+		// $this->loadComponent("Csrf");
+	}
 
-    /**
-     * Before render callback.
-     *
-     * @param \Cake\Event\Event $event The beforeRender event.
-     * @return \Cake\Http\Response|null|void
-     */
-    public function beforeRender(Event $event)
-    {
-        // Note: These defaults are just to get started quickly with development
-        // and should not be used in production.
-        // You should instead set "_serialize" in each action as required.
-        if (!array_key_exists("_serialize", $this->viewVars) &&
-            in_array($this->response->getType(), ["application/json", "application/xml"])
-        ) {
-            $this->set("_serialize", true);
-        }
-    }
+	protected function writeOnSession($field, $data = "")
+	{
+		$this->request->session()->write($field, $data);
+	}
+
+	protected function readFromSession($field)
+	{
+		return $this->request->session()->read($field);
+	}
+
+	protected function atualizarUsuario()
+	{
+		$usuarioSession = $this->readFromSession("Auth.User");
+
+		if (is_array($usuarioSession))
+		{
+			$usuario =
+				$this
+					->Usuarios
+					->pegarId($usuarioSession["id"]);
+
+			$usuario = json_encode($usuario);
+			$usuario = json_decode($usuario, true);
+
+			$novaUsuarioSession =
+				array_merge(
+					$usuarioSession,
+					$usuario
+				);
+
+			$this->writeOnSession("Auth.User", $novaUsuarioSession);
+
+			return $novaUsuarioSession;
+		}
+
+		return false;
+	}
+
+	public function formatarRequestData($acao)
+	{
+		switch ($acao)
+		{
+			case "inserirCriador":
+				$this->request->data["criador_id"] = $this->usuario["id"];
+				break;
+			case "inserirUsuario":
+				$this->request->data["usuario_id"] = $this->usuario["id"];
+				break;
+		}
+	}
+
+	public function acessoRestrito()
+	{
+		if (!$this->usuario ||
+			($this->usuario && !$this->usuario["administrador"]))
+			throw new MethodNotAllowedException();
+	}
+
+	/**
+	 * Before render callback.
+	 *
+	 * @param \Cake\Event\Event $event The beforeRender event.
+	 * @return \Cake\Network\Response|null|void
+	 */
+	public function beforeRender(Event $event)
+	{
+		if (!array_key_exists("_serialize", $this->viewVars) &&
+			in_array($this->response->type(), ["application/json", "application/xml"])
+		)
+			$this->set("_serialize", true);
+	}
 }
