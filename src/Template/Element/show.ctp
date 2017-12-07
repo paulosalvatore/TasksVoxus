@@ -10,6 +10,10 @@
 							->link(
 								__("Add"),
 								[
+									"controller" =>
+										isset($controller["controller"])
+											? $controller["controller"]
+											: $this->request->controller,
 									"action" => "view"
 								],
 								[
@@ -117,6 +121,10 @@
 												->link(
 													'<span class="fa fa-eye" aria-hidden="true"></span>',
 													[
+														"controller" =>
+															isset($controller["controller"])
+																? $controller["controller"]
+																: $this->request->controller,
 														"action" => "view",
 														$item->id,
 														true
@@ -138,6 +146,10 @@
 												->link(
 													'<span class="fa fa-edit" aria-hidden="true"></span>',
 													[
+														"controller" =>
+															isset($controller["controller"])
+																? $controller["controller"]
+																: $this->request->controller,
 														"action" => "view",
 														$item->id
 													],
@@ -158,6 +170,10 @@
 												->postButton(
 													'<span class="fa fa-remove" aria-hidden="true"></span>',
 													[
+														"controller" =>
+															isset($controller["controller"])
+																? $controller["controller"]
+																: $this->request->controller,
 														"action" => "delete",
 														$item->id
 													],
