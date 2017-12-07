@@ -12,7 +12,7 @@ class CriarTabelaTasks extends AbstractMigration
 			->addColumn("usuario_id", "integer")
 			->addForeignKey("usuario_id", "usuarios", "id")
 			->addColumn("status", "integer")
-			->addColumn("usuario_concluido_id", "integer")
+			->addColumn("usuario_concluido_id", "integer", ["null" => true])
 			->addForeignKey("usuario_concluido_id", "usuarios", "id")
 			->addColumn("ativo", "boolean", ["default" => true])
 			->addColumn("criado", "datetime")
