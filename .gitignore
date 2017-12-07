@@ -2,6 +2,7 @@
 
 /vendor/*
 
+/tmp/*
 /tmp/cache/models/*
 !/tmp/cache/models/empty
 /tmp/cache/persistent/*
