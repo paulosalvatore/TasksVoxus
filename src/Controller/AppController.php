@@ -33,7 +33,7 @@ class AppController extends Controller
      *
      * Use this method to add common initialization code like loading components.
      *
-     * e.g. `$this->loadComponent('Security');`
+     * e.g. `$this->loadComponent("Security");`
      *
      * @return void
      */
@@ -41,15 +41,17 @@ class AppController extends Controller
     {
         parent::initialize();
 
-        $this->loadComponent('RequestHandler');
-        $this->loadComponent('Flash');
+        $this->loadComponent("RequestHandler");
+        $this->loadComponent("Flash");
 
         /*
          * Enable the following components for recommended CakePHP security settings.
          * see https://book.cakephp.org/3.0/en/controllers/components/security.html
          */
-        //$this->loadComponent('Security');
-        //$this->loadComponent('Csrf');
+        //$this->loadComponent("Security");
+        //$this->loadComponent("Csrf");
+
+		$this->loadComponent("CakeDC/Users.UsersAuth");
     }
 
     /**
@@ -63,10 +65,10 @@ class AppController extends Controller
         // Note: These defaults are just to get started quickly with development
         // and should not be used in production.
         // You should instead set "_serialize" in each action as required.
-        if (!array_key_exists('_serialize', $this->viewVars) &&
-            in_array($this->response->getType(), ['application/json', 'application/xml'])
+        if (!array_key_exists("_serialize", $this->viewVars) &&
+            in_array($this->response->getType(), ["application/json", "application/xml"])
         ) {
-            $this->set('_serialize', true);
+            $this->set("_serialize", true);
         }
     }
 }
