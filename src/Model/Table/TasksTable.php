@@ -20,6 +20,8 @@ class TasksTable extends Table
 
 		$this->belongsTo("Usuarios");
 
+		$this->hasMany("TasksArquivos");
+
 		$this->addBehavior(
 			"Timestamp",
 			[
@@ -95,6 +97,15 @@ class TasksTable extends Table
 				)
 				->contain(
 					[
+						"TasksArquivos" => function ($q)
+						{
+							return $q->where(
+								[
+									"TasksArquivos.ativo" => true
+								]
+							);
+						},
+						"TasksArquivos.Usuarios",
 						"Usuarios"
 					]
 				)

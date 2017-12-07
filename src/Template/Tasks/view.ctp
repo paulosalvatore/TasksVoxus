@@ -22,6 +22,7 @@
 				->create(
 					$task,
 					[
+						"type" => "file",
 						"class" => "form-horizontal",
 						"data-bvalidator-validate"
 					]
@@ -73,6 +74,7 @@
 							</div>
 						</div>
 					</div>
+
 					<div class="form-group">
 						<div class="row">
 							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="descricao">
@@ -100,6 +102,7 @@
 							</div>
 						</div>
 					</div>
+
 					<div class="form-group">
 						<div class="row">
 							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="descricao">
@@ -109,7 +112,7 @@
 							<div class="col-md-6 col-sm-5 col-xs-12">
 								<div class="input-group">
 									<div class="input-group-addon">
-										<span class="fa fa-info-circle"></span>
+										<span class="fa fa-warning"></span>
 									</div>
 									<?=
 										$this
@@ -120,6 +123,35 @@
 													"label" => false,
 													"data-bvalidator" => "required,maxlen[1]",
 													"class" => "form-control"
+												]
+											)
+									?>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="row">
+							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="descricao">
+								<?= __("Files") ?>
+							</label>
+							<div class="col-md-6 col-sm-5 col-xs-12">
+								<div class="input-group">
+									<div class="input-group-addon">
+										<span class="fa fa-file"></span>
+									</div>
+									<?=
+										$this
+											->Form
+											->input(
+												"tasks_arquivos[]",
+												[
+													"type" => "file",
+													"label" => false,
+													"class" => "form-control",
+													"multiple" => true,
+													"accept" => Arquivos::pegarFormatosAceitos("Tasks", "tasks_arquivos", true, true)
 												]
 											)
 									?>
@@ -169,12 +201,68 @@
 						</div>
 					</div>
 				<?php endif; ?>
-			</div>
-		<?=
-			$this
-				->Form
-				->end();
-		?>
+			<?=
+				$this
+					->Form
+					->end();
+			?>
+
+			<?php if (isset($task->id)): ?>
+				<div class="block-heading">
+					<div class="app-heading app-heading-small">
+						<div class="title">
+							<h2>
+								<?= __("Task Files") ?>
+							</h2>
+						</div>
+					</div>
+				</div>
+
+				<div class="block-content">
+					<?php
+						$controller = [
+							"nome" => __("Task Files"),
+							"controller" => "TasksArquivos",
+							"itens" => $task->tasks_arquivos,
+							"campos" => [
+								[
+									"campo" => "nome_original",
+									"nome" =>  __("Filename"),
+									"tamanho" => 30
+								],
+								[
+									"campo" => [
+										"usuario",
+										"nome"
+									],
+									"nome" =>  __("Uploaded by"),
+									"tamanho" => 30
+								],
+								[
+									"campo" => "criado",
+									"nome" =>  __("Uploaded date"),
+									"tamanho" => 20
+								]
+							],
+							"botões" => [
+								"adicionar" => false,
+								"editar" => false,
+								"visualizar" => false
+							]
+						];
+					?>
+
+					<?=
+						$this->element(
+							"show",
+							[
+								"controller" => $controller
+							]
+						)
+					?>
+				</div>
+			<?php endif; ?>
+		</div>
 	</div>
 </div>
 <br>

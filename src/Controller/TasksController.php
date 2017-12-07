@@ -56,9 +56,36 @@ class TasksController extends AppController
 		{
 			$data = $this->request->getData();
 
+			// Mantém a prioridade entre 1 e 5
+			$data["prioridade"] = max(1, min(5, $data["prioridade"]));
+
+			// Checa se o registro não possui uma ID
 			if (!$id)
 			{
+				// Define o usuário que criou o registro
 				$data["usuario_id"] = $this->usuario["id"];
+			}
+
+			// Loop para realizar o upload dos arquivos
+			foreach ($data["tasks_arquivos"] as $chave => $arquivo)
+			{
+				if ($arquivo["size"] > 0)
+				{
+					$data["tasks_arquivos_upload"][$chave] =
+						\Arquivos::upload(
+							"Tasks",
+							"tasks_arquivos",
+							$arquivo
+						);
+
+					// Checa se o upload deu certo
+					if (!$data["tasks_arquivos_upload"][$chave]["erro"])
+					{
+						$data["tasks_arquivos"][$chave]["nome_original"] = $data["tasks_arquivos_upload"][$chave]["nomeOriginal"];
+						$data["tasks_arquivos"][$chave]["arquivo"] = $data["tasks_arquivos_upload"][$chave]["arquivoNome"];
+						$data["tasks_arquivos"][$chave]["usuario_id"] = $this->usuario["id"];
+					}
+				}
 			}
 
 			$task =
@@ -84,6 +111,8 @@ class TasksController extends AppController
 			}
 			else
 			{
+				foreach ($data["tasks_arquivos_upload"] as $chave => $arquivo)
+					\Arquivos::deletar("Tasks", "tasks_arquivos", $arquivo["arquivoNome"]);
 				if ($id)
 					$this->Flash->error(__("Task not edited. Please try again."));
 				else
