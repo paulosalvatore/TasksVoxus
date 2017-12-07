@@ -11,7 +11,7 @@ class CriarTabelaHistoricosAuditoria extends AbstractMigration
 			->addColumn("campo", "string")
 			->addColumn("anterior", "text", ["null" => true])
 			->addColumn("novo", "text", ["null" => true])
-			->addColumn("usuario_id", "integer")
+			->addColumn("usuario_id", "integer", ["null" => true])
 			->addForeignKey("usuario_id", "usuarios", "id")
 			->addColumn("criado", "datetime")
 			->save();
