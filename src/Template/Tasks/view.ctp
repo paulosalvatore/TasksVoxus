@@ -49,7 +49,7 @@
 				<div class="block-content">
 					<div class="form-group">
 						<div class="row">
-							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="descricao">
+							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="titulo">
 								<?= __("Title") ?>
 								<span class="required">*</span>
 							</label>
@@ -105,7 +105,7 @@
 
 					<div class="form-group">
 						<div class="row">
-							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="descricao">
+							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="prioridade">
 								<?= __("Priority") ?> (1 - 5)
 								<span class="required">*</span>
 							</label>
@@ -133,7 +133,7 @@
 
 					<div class="form-group">
 						<div class="row">
-							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="descricao">
+							<label class="control-label col-md-3 col-sm-3 col-xs-12" for="tasks-arquivos">
 								<?= __("Files") ?>
 							</label>
 							<div class="col-md-6 col-sm-5 col-xs-12">
@@ -159,6 +159,32 @@
 							</div>
 						</div>
 					</div>
+
+					<?php if ($task->id && !$visualizar): ?>
+						<div class="form-group">
+							<div class="row">
+								<label class="control-label col-md-3 col-sm-3 col-xs-12" for="concluida">
+									<?= __("Done") ?>
+								</label>
+								<div class="col-md-6 col-sm-5 col-xs-12">
+									<div class="input-group">
+										<?=
+											$this
+												->Form
+												->input(
+													"concluida",
+													[
+														"type" => "checkbox",
+														"label" => false,
+														"class" => "js-switch"
+													]
+												)
+										?>
+									</div>
+								</div>
+							</div>
+						</div>
+					<?php endif; ?>
 				</div>
 
 				<?php if (!$visualizar): ?>
