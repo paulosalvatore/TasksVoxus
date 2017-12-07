@@ -24,3 +24,4 @@
 /app/Config/database.php
 /vendors/*
 /.idea/*
+/config/Migrations/schema-dump-default.lock
