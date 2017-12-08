@@ -144,19 +144,6 @@ class UsuariosController extends AppController
 		$this->set("_serialize", ["usuario"]);
 	}
 
-	public function beforeFilter(Event $event)
-	{
-		parent::beforeFilter($event);
-
-		$this->Auth->allow(
-			[
-				"view",
-				"autenticar",
-				"autenticado"
-			]
-		);
-	}
-
 	public function autenticar()
 	{
 		$client = new Google_Client();
@@ -227,10 +214,8 @@ class UsuariosController extends AppController
 
 		if ($this->Usuarios->save($usuario))
 		{
-			if (!$this->usuario) {
-				$this->Auth->setUser($usuario);
-				$this->Usuarios->UsuariosLogin->registrarNovoLogin($usuario["id"]);
-			}
+			$this->Auth->setUser($usuario);
+			$this->Usuarios->UsuariosLogin->registrarNovoLogin($usuario["id"]);
 
 			return $this->redirect(
 				[
@@ -239,5 +224,18 @@ class UsuariosController extends AppController
 				]
 			);
 		}
+	}
+
+	public function beforeFilter(Event $event)
+	{
+		parent::beforeFilter($event);
+
+		$this->Auth->allow(
+			[
+				"view",
+				"autenticar",
+				"autenticado"
+			]
+		);
 	}
 }
