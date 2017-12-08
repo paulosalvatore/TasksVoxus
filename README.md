@@ -3,7 +3,7 @@
 
 Essa aplicação foi desenvolvida para o 'DesafioDevVoxus' que consistia em desenvolver uma aplicação web que atendesse alguns requisitos básicos de programação.
 
-## Installation
+## Instalação
 
 1. Faça o download do projeto
 2. Coloque a pasta do projeto na pasta de algum servidor apache (esse projeto foi desenvolvido no Xampp 5.6.3)
@@ -17,18 +17,19 @@ Essa aplicação foi desenvolvida para o 'DesafioDevVoxus' que consistia em dese
 1. A estrutura dos arquivos segue o padrão MVC.
 2. Diretório com os Controllers: src/Controller
 3. Diretório com os Models: src/Model/Table
-4. Diretório com a classe de upload de arquivos: config/bootstrap.php
-5. Diretório com as views: src/Template
+4. Diretório com as Views: src/Template
+5. Diretório com a classe de upload de arquivos: config/bootstrap.php
 6. Arquivo com atualização de usuário src/Controller/AppController.php
 7. Diretório das migrations (criação da base de dados): config/Migrations
+8. Tabela 'HistoricosAuditoria' contém todas as modificações realizadas
 
 ## Tempo demorado
 
-Até o estágio atual foram cerca de 7 horas diretas de desenvolvimento, com algumas pausas.
+Até o estágio atual foram cerca de 7-8 horas de desenvolvimento, com algumas pausas.
 
 ## Dificuldades do Projeto
 
-A autenticação com o Google teve alguns problemas aparentemente devido à versão PHP que trata certificados SSL de uma maneira diferente, gastei um tempo com pesquisas tentando arrumar uma solução, apliquei todas as encontradas mas nenhuma funcionou, provavelmente porque estava testando em um ambiente local, então desativei a etapa de verificação de segurança, que funciona normalmente no ambiente de hospedagem remoto.
+A autenticação com o Google teve alguns problemas aparentemente devido à versão PHP utilizada que trata certificados SSL de uma maneira diferente, gastei um tempo com pesquisas tentando arrumar uma solução, apliquei todas as encontradas mas nenhuma funcionou, provavelmente porque estava testando em um ambiente local, então desativei a etapa de verificação de segurança no ambiente local, que funcionou normalmente no ambiente de hospedagem remoto.
 
 ## TODO
 
