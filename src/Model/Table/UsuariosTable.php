@@ -131,4 +131,22 @@ class UsuariosTable extends Table
 
 		return $query;
 	}
+
+	public function pegarPorEmail($email)
+	{
+		$query =
+			$this
+				->find()
+				->where(
+					[
+						"Usuarios.email" => $email
+					]
+				)
+				->first();
+
+		if (count($query) == 0)
+			return $this->newEntity();
+
+		return $query;
+	}
 }

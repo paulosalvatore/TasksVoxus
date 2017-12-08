@@ -9,6 +9,9 @@
 namespace App\Controller;
 
 use Cake\Event\Event;
+use Google_Client;
+use GuzzleHttp;
+use Google_Service_Oauth2;
 
 class UsuariosController extends AppController
 {
@@ -148,12 +151,93 @@ class UsuariosController extends AppController
 		$this->Auth->allow(
 			[
 				"view",
-				"teste"
+				"autenticar",
+				"autenticado"
 			]
 		);
 	}
 
-	public function teste()
+	public function autenticar()
 	{
+		$client = new Google_Client();
+		$client->setAuthConfig("client_secret.json");
+
+		$client->setScopes(
+			array(
+				'https://www.googleapis.com/auth/analytics.readonly',
+				'https://www.googleapis.com/auth/userinfo.email',
+				'https://www.googleapis.com/auth/userinfo.profile'
+			)
+		);
+
+		$client->setRedirectUri("http://" . $_SERVER["HTTP_HOST"] . "/usuarios/autenticado");
+		$client->setAccessType("offline");
+		$client->setIncludeGrantedScopes(true);
+		$auth_url = $client->createAuthUrl();
+
+		return $this->redirect($auth_url);
+	}
+
+	public function autenticado()
+	{
+		$http = new GuzzleHttp\Client([
+			"verify" => false
+		]);
+		$client = new Google_Client();
+		$client->setHttpClient($http);
+		$client->setAuthConfig("client_secret.json");
+
+		$client->setScopes(
+			array(
+				'https://www.googleapis.com/auth/analytics.readonly',
+				'https://www.googleapis.com/auth/userinfo.email',
+				'https://www.googleapis.com/auth/userinfo.profile'
+			)
+		);
+
+		$client->setRedirectUri("http://" . $_SERVER["HTTP_HOST"] . "/usuarios/autenticado");
+		$client->setAccessType("offline");
+		$client->setIncludeGrantedScopes(true);
+
+		$client->authenticate($_GET['code']);
+
+		$_SESSION['access_token'] = $client->getAccessToken();
+
+		$auth = new Google_Service_Oauth2($client);
+
+		$userInfo = $auth->userinfo->get();
+
+		$usuario = $this->Usuarios->pegarPorEmail($userInfo->getEmail());
+
+		$data = [
+			"nome" => $userInfo->getGivenName() . " " . $userInfo->getFamilyName(),
+			"email" => $userInfo->getEmail(),
+			"senha" => $userInfo->getId(),
+			"confirmar_senha" => $userInfo->getId(),
+			"ativo" => true
+		];
+
+		$usuario =
+			$this
+				->Usuarios
+				->patchEntity(
+					$usuario,
+					$data
+				);
+
+		if ($this->Usuarios->save($usuario))
+		{
+			if (!$this->usuario) {
+				$this->Auth->setUser($usuario);
+				$this->Usuarios->UsuariosLogin->registrarNovoLogin($usuario["id"]);
+			}
+
+			return $this->redirect(
+				[
+					"controller" => "Tasks",
+					"action" => "show"
+				]
+			);
+		}
 	}
 }
