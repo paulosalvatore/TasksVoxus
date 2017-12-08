@@ -274,6 +274,38 @@
 								"adicionar" => false,
 								"editar" => false,
 								"visualizar" => false
+							],
+							"acoes" => [
+								"visualizar_arquivo" => [
+									"ocultarNome" => true,
+									"url" => [
+										"controller" => "TasksArquivos",
+										"action" => "view",
+										"item_id"
+									],
+									"icone" => "eye",
+									"atributos" => [
+										"class" => "btn btn-success btn-icon btn-clean",
+										"escape" => false,
+										"title" => __("View File"),
+										"target" => "_blank"
+									]
+								],
+								"download_arquivo" => [
+									"ocultarNome" => true,
+									"url" => [
+										"controller" => "TasksArquivos",
+										"action" => "download",
+										"item_id"
+									],
+									"icone" => "download",
+									"atributos" => [
+										"class" => "btn btn-primary btn-icon btn-clean",
+										"escape" => false,
+										"title" => __("Download File"),
+										"target" => "_blank"
+									]
+								]
 							]
 						];
 					?>

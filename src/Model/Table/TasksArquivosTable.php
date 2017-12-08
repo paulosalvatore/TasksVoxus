@@ -8,6 +8,7 @@
 
 namespace App\Model\Table;
 
+use Aura\Intl\Exception;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -46,5 +47,24 @@ class TasksArquivosTable extends Table
 			->notEmpty("usuario_id");
 
 		return $validator;
+	}
+
+	public function pegarId($id)
+	{
+		$query =
+			$this
+				->find()
+				->where(
+					[
+						"TasksArquivos.id" => $id,
+						"TasksArquivos.ativo" => true
+					]
+				)
+				->first();
+
+		if (count($query) == 0)
+			throw new Exception(__("There's no register recorded with this ID."));
+
+		return $query;
 	}
 }

@@ -90,6 +90,9 @@
 									<?php if (isset($controller["acoes"])): ?>
 										<?php foreach ($controller["acoes"] as $nome => $acao): ?>
 											<?php
+												if (isset($acao["ocultarNome"]) && $acao["ocultarNome"])
+													$nome = "";
+
 												if (in_array("item_id", $acao["url"]))
 												{
 													$key = array_search("item_id", $acao["url"]);
