@@ -65,6 +65,7 @@ class TasksController extends AppController
 			{
 				if ($arquivo["size"] > 0)
 				{
+					// Realiza o upload do arquivo
 					$data["tasks_arquivos_upload"][$chave] =
 						\Arquivos::upload(
 							"Tasks",
@@ -80,7 +81,18 @@ class TasksController extends AppController
 						$data["tasks_arquivos"][$chave]["usuario_id"] = $this->usuario["id"];
 					}
 				}
+				else
+					unset($data["tasks_arquivos"][$chave]);
 			}
+
+			if (isset($data["concluida"]) &&
+				$data["concluida"] &&
+				!$task->concluida)
+			{
+				$data["usuario_concluido_id"] = $this->usuario["id"];
+			}
+			elseif (!$data["concluida"])
+				$data["usuario_concluido_id"] = null;
 
 			$task =
 				$this
@@ -99,14 +111,17 @@ class TasksController extends AppController
 
 				return $this->redirect(
 					[
-						"action" => "show"
+						"action" => "view",
+						$task->id
 					]
 				);
 			}
 			else
 			{
-				foreach ($data["tasks_arquivos_upload"] as $chave => $arquivo)
-					\Arquivos::deletar("Tasks", "tasks_arquivos", $arquivo["arquivoNome"]);
+				if (isset($data["task_arquivos_upload"]))
+					foreach ($data["tasks_arquivos_upload"] as $chave => $arquivo)
+						\Arquivos::deletar("Tasks", "tasks_arquivos", $arquivo["arquivoNome"]);
+
 				if ($id)
 					$this->Flash->error(__("Task not edited. Please try again."));
 				else
