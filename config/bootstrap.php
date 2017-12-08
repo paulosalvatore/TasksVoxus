@@ -401,7 +401,10 @@ class Arquivos
 				return false;
 			}
 
-			$arquivo = $campo . "/" . $arquivo;
+			$arquivo =
+				strtolower($controlador)
+				."/"
+				.$arquivo;
 
 			if (isset(Arquivos::$definicoes[$controlador][$campo]["img"]) &&
 				Arquivos::$definicoes[$controlador][$campo]["img"])
