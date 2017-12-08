@@ -1,51 +1,45 @@
-# CakePHP Application Skeleton
+# TasksVoxus
+# por Paulo Salvatore
 
 [![Build Status](https://img.shields.io/travis/cakephp/app/master.svg?style=flat-square)](https://travis-ci.org/cakephp/app)
 [![License](https://img.shields.io/packagist/l/cakephp/app.svg?style=flat-square)](https://packagist.org/packages/cakephp/app)
 
-A skeleton for creating applications with [CakePHP](https://cakephp.org) 3.x.
-
-The framework source code can be found here: [cakephp/cakephp](https://github.com/cakephp/cakephp).
+Essa aplicação foi desenvolvida para o 'DesafioDevVoxus' que consistia em desenvolver uma aplicação web que atendesse alguns requisitos básicos de programação.
 
 ## Installation
 
-1. Download [Composer](https://getcomposer.org/doc/00-intro.md) or update `composer self-update`.
-2. Run `php composer.phar create-project --prefer-dist cakephp/app [app_name]`.
+1. Faça o download do projeto
+2. Coloque a pasta do projeto na pasta de algum servidor apache (esse projeto foi desenvolvido no Xampp 5.6.3)
+3. Importe o banco de dados (rootProjeto/sql) ou utilize o comando no console bin\cake migrations migrate (certifique-se que o console está na pasta raiz do projeto)
+4. Acesse a URL http://127.0.0.1/usuarios/login e faça o cadastro via formulário ou via Google+.
+5. Adicione uma Task clicando no botão 'Add'.
+6. É possível adicionar múltiplos arquivos às Tasks, visualizá-los e marcá-la como concluído.
 
-If Composer is installed globally, run
+## Estrutura/Diretórios importantes
 
-```bash
-composer create-project --prefer-dist cakephp/app
-```
+1. A estrutura dos arquivos segue o padrão MVC.
+2. Diretório com os Controllers: src/Controller
+3. Diretório com os Models: src/Model/Table
+4. Diretório com a classe de upload de arquivos: config/bootstrap.php
+5. Diretório com as views: src/Template
+6. Arquivo com atualização de usuário src/Controller/AppController.php
+7. Diretório das migrations (criação da base de dados): config/Migrations
 
-In case you want to use a custom app dir name (e.g. `/myapp/`):
+## Tempo demorado
 
-```bash
-composer create-project --prefer-dist cakephp/app myapp
-```
+Até o estágio atual foram cerca de 7 horas diretas de desenvolvimento, com algumas pausas.
 
-You can now either use your machine's webserver to view the default home page, or start
-up the built-in webserver with:
+## Dificuldades do Projeto
 
-```bash
-bin/cake server -p 8765
-```
+A autenticação com o Google teve alguns problemas aparentemente devido à versão PHP que trata certificados SSL de uma maneira diferente, gastei um tempo com pesquisas tentando arrumar uma solução, apliquei todas as encontradas mas nenhuma funcionou, provavelmente porque estava testando em um ambiente local, então desativei a etapa de verificação de segurança, que funciona normalmente no ambiente de hospedagem remoto.
 
-Then visit `http://localhost:8765` to see the welcome page.
+## TODO
 
-## Update
+1. Integração com Amazon S3
+2. Index com Elastic Search
 
-Since this skeleton is a starting point for your application and various files
-would have been modified as per your needs, there isn't a way to provide
-automated upgrades, so you have to do any updates manually.
+Estou com pouco tempo livre e alguns projetos em fase final, em breve posso dedicar mais um tempo para integrar essas etapas.
 
-## Configuration
+## Considerações
 
-Read and edit `config/app.php` and setup the `'Datasources'` and any other
-configuration relevant for your application.
-
-## Layout
-
-The app skeleton uses a subset of [Foundation](http://foundation.zurb.com/) (v5) CSS
-framework by default. You can, however, replace it with any other library or
-custom styles.
+Como o projeto não vai entrar em produção, creio que no estado atual já dá pra ter noção das etapas desenvolvidas, incluindo todo o progresso do desenvolvimento que pode ser acompanhando através dos commits criados, creio que o propósito do desafio é mais nivelar e conhecer as capacidades de desenvolvimento do que ter uma ferramenta completamente implementável em si.
