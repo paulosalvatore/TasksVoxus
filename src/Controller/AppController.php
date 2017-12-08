@@ -90,6 +90,12 @@ class AppController extends Controller
 	{
 		$usuarioSession = $this->readFromSession("Auth.User");
 
+		if (is_object($usuarioSession))
+		{
+			$usuarioSession = json_encode($usuarioSession);
+			$usuarioSession = json_decode($usuarioSession, true);
+		}
+
 		if (is_array($usuarioSession))
 		{
 			$usuario =
